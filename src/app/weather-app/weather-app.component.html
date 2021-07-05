@@ -1,0 +1,40 @@
+<!-- <h4>Template for main page:</h4> -->
+<div class="container-fluid">
+
+  <div class="well">
+    <h2>Enter a zipcode:</h2>
+    <input class="form-control" placeholder="Zipcode" type="text" id="addLocation" [(ngModel)]="zipCodeStr">
+    <p *ngIf="!isValidZip" class="text-danger">Please Enter a valid Zipcode</p>
+    <p *ngIf="isDuplicateZip" class="text-danger">This location has been already added</p>
+    <br>
+    <button [disabled]="!zipCodeStr" class="btn btn-primary" id="addLocationBtn"(click)="addLocation()">
+    Add location
+  </button>
+  </div>
+
+  <div >
+    <div class="well flex" *ngFor='let weatherCard of weatherDataArray;index as i'>
+      <div>
+        <h3>{{weatherCard.locationName}} {{weatherCard.zipCode}}</h3>
+        <h4>Current conditions: {{weatherCard.currentCondition}}</h4>
+        <h4>Temperatures today:</h4>
+        <p>
+          Current {{weatherCard.currentTemperature}}
+          - Max {{weatherCard.minToday}}
+          - Min {{weatherCard.maxToday}}
+        </p>
+        <p>
+          <a routerLink="{{weatherCard.forcastLink}}">Show 5-day forecast for {{weatherCard.locationName}}</a>
+        </p>
+      </div>
+      <div>
+        <span class="close" (click)="deleteLocation(i)" style="font-size: 1.5rem;font-weight: 800;">×</span>
+        <img src="{{weatherCard.iconLink}}" >
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+
