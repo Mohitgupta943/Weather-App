@@ -11,7 +11,7 @@ export class WeatherService {
   getWeatherDataByZipCode(zipCode: string): Observable<any> {
     
     let weatherUrl=`http://api.openweathermap.org/data/2.5/weather?q=${zipCode},us&units=metric&appid=${this.apiKey}`
-    return this.http.get<any>(weatherUrl,{responseType:'json'})
+    return this.http.get(weatherUrl,{responseType:'json'})
 
    
   }

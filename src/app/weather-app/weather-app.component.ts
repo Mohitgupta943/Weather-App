@@ -13,13 +13,13 @@ export class WeatherAppComponent implements OnInit {
   zipCodeStr: string;
   isValidZip: boolean = true;
   isDuplicateZip:boolean=false;
-  zipCodeArray: Array<string>;
   weatherDataArray:Array<WeatherCard>;
   constructor(private weatherService: WeatherService) { }
 
   ngOnInit() {
     this.weatherDataArray = JSON.parse(localStorage.getItem('weatherDataArray'));
-    if (this.weatherDataArray == null) {
+   
+    if (this.weatherDataArray === null) {
       this.weatherDataArray= [];
       localStorage.setItem('weatherDataArray', JSON.stringify(this.weatherDataArray));
     }
@@ -29,14 +29,14 @@ export class WeatherAppComponent implements OnInit {
   addLocation(): void {
     console.log(this.zipCodeStr);
     this.isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(this.zipCodeStr);
-
+    this.isDuplicateZip=false;
     if (this.isValidZip) {
-      this.isDuplicateZip=false;
-      this.checkDuplicateZip(this.zipCodeStr);
-      console.log("isDuplicate",this.isDuplicateZip)
-      if(this.isDuplicateZip==false){
-        this.getWeatherData(this.zipCodeStr);
-      }
+      
+      this.checkAndDeleteDuplicate(this.zipCodeStr)
+      this.getWeatherData(this.zipCodeStr);
+      
+
+      
      
 
     }
@@ -44,12 +44,11 @@ export class WeatherAppComponent implements OnInit {
 
   getWeatherData(zipCode: string): any {
    
-    console.log(zipCode, '********************')
-    this.weatherService.getWeatherDataByZipCode(zipCode).subscribe(res => {
+
+    this.weatherService.getWeatherDataByZipCode(zipCode).subscribe(
+      res => {
       var weatherCard:WeatherCard=this.parseResponse(res,this.zipCodeStr)
       console.log(weatherCard)
-      // this.zipCodeArray.push(this.zipCodeStr);
-      // this.zipCodeArray = Array.from(new Set(this.zipCodeArray));
       this.weatherDataArray.push(weatherCard);
       localStorage.setItem('weatherDataArray', JSON.stringify(this.weatherDataArray));
       console.log(this.weatherDataArray);
@@ -75,7 +74,6 @@ export class WeatherAppComponent implements OnInit {
     newWeatherCard.maxToday=res['main']['temp_max'];
     newWeatherCard.minToday=res['main']['temp_min']
     newWeatherCard.forcastLink=`/forecast/${zip}`
-    //newWeatherCard.iconLink=` http://openweathermap.org/img/wn/${iconCode}@2x.png`;
     if(condition=='clouds'){icon='clouds';}
     else if(condition=='rain'){icon='rain';}
     else if(condition=='snow'){icon='snow';}
@@ -100,12 +98,26 @@ export class WeatherAppComponent implements OnInit {
       
       if (weatherData.zipCode===zip){
         console.log("-------------->",weatherData.zipCode,zip)
+
         this.isDuplicateZip=true;
       }
 
     });
 
  
+  }
+
+  checkAndDeleteDuplicate(zip:string):void{
+
+    for(let index=0;index<this.weatherDataArray.length;index++){
+      if (this.weatherDataArray[index].zipCode===zip){
+      console.log("-------------->")
+        this.weatherDataArray.splice(index,1);
+        console.log("DELETED",)
+      
+    }
+  }
+
   }
 
 }
